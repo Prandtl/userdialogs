@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Support.V7.App;
+using Android.Util;
 using Android.Views;
 
 
@@ -24,17 +26,25 @@ namespace Acr.UserDialogs.Fragments
         public override Dialog OnCreateDialog(Bundle bundle)
         {
             Dialog dialog = null;
-            if (this.Config == null && !ConfigStore.Instance.Contains(bundle))
-            {
-                this.ShowsDialog = false;
-                this.Dismiss();
-            }
-            else
-            {
-                this.Config = this.Config ?? ConfigStore.Instance.Pop<T>(bundle);
-                dialog = this.CreateDialog(this.Config);
-                this.SetDialogDefaults(dialog);
-            }
+			try
+			{
+				if (this.Config == null && !ConfigStore.Instance.Contains(bundle))
+				{
+					this.ShowsDialog = false;
+					this.Dismiss();
+				}
+				else
+				{
+					this.Config = this.Config ?? ConfigStore.Instance.Pop<T>(bundle);
+					dialog = this.CreateDialog(this.Config);
+					this.SetDialogDefaults(dialog);
+				}
+			}
+			catch (KeyNotFoundException ex)
+			{
+				this.ShowsDialog = false;
+				this.Dismiss();
+			}
             return dialog;
         }
 
